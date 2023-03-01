@@ -17,10 +17,23 @@ router.post('/', (req, res) => {
         {res.status(401).json({message: "User does not Exist"})}
         else
         {
-            if(result[0].password === userPassword)
-            {res.status(200).json({message: `Welcome ${result.map(result => result.name)}. You have Successfully Logged In`, tweets: result.map(result => result.tweets)})}
-            else
-            {res.status(400).json({message: "Email or Password is Wrong"})}
+            bcrypt.compare(userPassword, result[0].password)
+                .then(cmp => {
+                    if(cmp === true)
+                    {
+                        const loggedInUser = {
+                            name: result[0].name,
+                            number: result[0].number,                  
+                            email: userEmail,
+                            password: result[0].password
+                        }
+                        req.session.user = loggedInUser
+                        req.session.save()   
+                        res.status(200).json({message: "You have Successfully Logged In", result: loggedInUser})
+                    }
+                    else
+                    {res.status(400).json({message: "Email or Password is Wrong"})}
+                })
         }
     })
     .catch(error => res.status(500).json( {message: "Database Error", err: error}))
