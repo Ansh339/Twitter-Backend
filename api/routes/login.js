@@ -1,4 +1,5 @@
 const express = require('express')
+const bcrypt = require('bcrypt')
 const router = express.Router()
 
 const Signup = require('../model/signup')
@@ -27,8 +28,8 @@ router.post('/', (req, res) => {
                             email: userEmail,
                             password: result[0].password
                         }
-                        req.session.user = loggedInUser
-                        req.session.save()   
+                        // req.session.user = loggedInUser
+                        // req.session.save()   
                         res.status(200).json({message: "You have Successfully Logged In", result: loggedInUser})
                     }
                     else
